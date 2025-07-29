@@ -4,8 +4,8 @@ import os
 
 app = FastAPI()
 
-API_TOKEN = "123456SECRET"
-CREDENTIALS_PATH = "safe_folder/credentials.json"
+API_TOKEN = os.getenv("API_TOKEN", "default-token")
+CREDENTIALS_PATH = "/etc/secrets/credentials.json"
 
 @app.get("/")
 def root():
@@ -14,6 +14,8 @@ def root():
 @app.get("/get-credentials")
 async def get_credentials(request: Request):
     token = request.headers.get("X-API-Token")
+    print(f"Received token from header: '{token}'")
+    print(f"Expected API_TOKEN: '{API_TOKEN}'")
     if token != API_TOKEN:
         raise HTTPException(status_code=403, detail="Unauthorized")
 
