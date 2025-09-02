@@ -216,9 +216,9 @@ def update_topup_status_paid(txid: str, amount: Optional[float], provider: str, 
     admin_note = f"provider={provider}; txn={provider_txn_id}"
 
     # col mapping: F:Status, I:ReviewedAtISO, J:AdminNote  (ตาม header ด้านบน)
-    ws.update(f"F{row_idx}", "Approved")
-    ws.update(f"I{row_idx}", reviewed_at)
-    ws.update(f"J{row_idx}", admin_note)
+    ws.update_acell(f"F{row_idx}", "Approved")
+    ws.update_acell(f"I{row_idx}", reviewed_at)
+    ws.update_acell(f"J{row_idx}", admin_note)
     return True
 
 def _update_user_role_and_expiration(client, username: str, new_role: str, months: int = 1) -> bool:
@@ -252,13 +252,13 @@ def _update_user_role_and_expiration(client, username: str, new_role: str, month
         return True  # อย่าไปลดสิทธิ์ admin
 
     new_exp = datetime.utcnow() + timedelta(days=30 * max(1, months))
-    ws.update(f"C{row_idx}", str(new_role))
-    ws.update(f"F{row_idx}", _dt_yyyymmdd(new_exp))
-
+    ws.update_acell(f"C{row_idx}", str(new_role))
+    ws.update_acell(f"F{row_idx}", _dt_yyyymmdd(new_exp))
+    
     policy = ROLE_POLICY.get(new_role.lower())
     if policy:
-        ws.update(f"D{row_idx}", str(policy["sites"]))
-        ws.update(f"E{row_idx}", "TRUE" if policy["can_prebook"] else "FALSE")
+        ws.update_acell(f"D{row_idx}", str(policy["sites"]))
+        ws.update_acell(f"E{row_idx}", "TRUE" if policy["can_prebook"] else "FALSE")
 
     return True
 
